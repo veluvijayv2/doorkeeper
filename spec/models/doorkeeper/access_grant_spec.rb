@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Doorkeeper::AccessGrant do
-  subject { FactoryBot.build(:access_grant) }
+  subject { FactoryBot.build(:access_grant, :with_resource_owner) }
 
   it { expect(subject).to be_valid }
 

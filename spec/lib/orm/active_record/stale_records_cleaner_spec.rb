@@ -20,7 +20,7 @@ describe Doorkeeper::Orm::ActiveRecord::StaleRecordsCleaner do
 
         context 'with revoked record' do
           before do
-            FactoryBot.create model_name, revoked_at: Time.current - 1.minute
+            FactoryBot.create model_name, :with_resource_owner, revoked_at: Time.current - 1.minute
           end
 
           it 'removes the record' do
@@ -30,7 +30,7 @@ describe Doorkeeper::Orm::ActiveRecord::StaleRecordsCleaner do
 
         context 'with record revoked in the future' do
           before do
-            FactoryBot.create model_name, revoked_at: Time.current + 1.minute
+            FactoryBot.create model_name, :with_resource_owner, revoked_at: Time.current + 1.minute
           end
 
           it 'keeps the record' do
@@ -40,7 +40,7 @@ describe Doorkeeper::Orm::ActiveRecord::StaleRecordsCleaner do
 
         context 'with unrevoked record' do
           before do
-            FactoryBot.create model_name, revoked_at: nil
+            FactoryBot.create model_name, :with_resource_owner, revoked_at: nil
           end
 
           it 'keeps the record' do
@@ -56,7 +56,7 @@ describe Doorkeeper::Orm::ActiveRecord::StaleRecordsCleaner do
 
         context 'with record that is expired' do
           before do
-            FactoryBot.create model_name, created_at: expiry_border - 1.minute
+            FactoryBot.create model_name, :with_resource_owner, created_at: expiry_border - 1.minute
           end
 
           it 'removes the record' do
@@ -66,7 +66,7 @@ describe Doorkeeper::Orm::ActiveRecord::StaleRecordsCleaner do
 
         context 'with record that is not expired' do
           before do
-            FactoryBot.create model_name, created_at: expiry_border + 1.minute
+            FactoryBot.create model_name, :with_resource_owner, created_at: expiry_border + 1.minute
           end
 
           it 'keeps the record' do

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Doorkeeper::TokenInfoController do
   describe 'when requesting token info with valid token' do
-    let(:doorkeeper_token) { FactoryBot.create(:access_token) }
+    let(:doorkeeper_token) { FactoryBot.create(:access_token, :with_resource_owner) }
 
     describe 'successful request' do
       it 'responds with token info' do

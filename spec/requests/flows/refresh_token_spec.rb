@@ -39,8 +39,8 @@ describe 'Refresh Token Flow' do
     before do
       @token = FactoryBot.create(
         :access_token,
+        :with_resource_owner,
         application: @client,
-        resource_owner_id: 1,
         use_refresh_token: true
       )
     end

@@ -11,7 +11,7 @@ module Doorkeeper::OAuth
              }
     end
 
-    let(:grant)  { FactoryBot.create :access_grant }
+    let(:grant)  { FactoryBot.create :access_grant, :with_resource_owner }
     let(:client) { grant.application }
     let(:redirect_uri) { client.redirect_uri }
     let(:params) { { redirect_uri: redirect_uri } }

@@ -85,7 +85,7 @@ describe Doorkeeper::TokensController do
   describe 'when requested token introspection' do
     context 'authorized using Bearer token' do
       let(:client) { FactoryBot.create(:application) }
-      let(:access_token) { FactoryBot.create(:access_token, application: client) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner, application: client) }
 
       it 'responds with full token introspection' do
         request.headers['Authorization'] = "Bearer #{access_token.token}"
@@ -99,7 +99,7 @@ describe Doorkeeper::TokensController do
 
     context 'authorized using Client Authentication' do
       let(:client) { FactoryBot.create(:application) }
-      let(:access_token) { FactoryBot.create(:access_token, application: client) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner, application: client) }
 
       it 'responds with full token introspection' do
         request.headers['Authorization'] = basic_auth_header_for_client(client)
@@ -114,7 +114,7 @@ describe Doorkeeper::TokensController do
 
     context 'public access token' do
       let(:client) { FactoryBot.create(:application) }
-      let(:access_token) { FactoryBot.create(:access_token, application: nil) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner, application: nil) }
 
       it 'responds with full token introspection' do
         request.headers['Authorization'] = basic_auth_header_for_client(client)
@@ -130,7 +130,7 @@ describe Doorkeeper::TokensController do
     context 'token was issued to a different client than is making this request' do
       let(:client) { FactoryBot.create(:application) }
       let(:different_client) { FactoryBot.create(:application) }
-      let(:access_token) { FactoryBot.create(:access_token, application: client) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner, application: client) }
 
       it 'responds with only active state' do
         request.headers['Authorization'] = basic_auth_header_for_client(different_client)
@@ -146,7 +146,7 @@ describe Doorkeeper::TokensController do
 
     context 'using invalid credentials to authorize' do
       let(:client) { double(uid: '123123', secret: '666999') }
-      let(:access_token) { FactoryBot.create(:access_token) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner) }
 
       it 'responds with invalid_client error' do
         request.headers['Authorization'] = basic_auth_header_for_client(client)
@@ -163,7 +163,7 @@ describe Doorkeeper::TokensController do
 
     context 'using wrong token value' do
       let(:client) { FactoryBot.create(:application) }
-      let(:access_token) { FactoryBot.create(:access_token, application: client) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner, application: client) }
 
       it 'responds with only active state' do
         request.headers['Authorization'] = basic_auth_header_for_client(client)
@@ -177,7 +177,7 @@ describe Doorkeeper::TokensController do
 
     context 'when requested Access Token expired' do
       let(:client) { FactoryBot.create(:application) }
-      let(:access_token) { FactoryBot.create(:access_token, application: client, created_at: 1.year.ago) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner, application: client, created_at: 1.year.ago) }
 
       it 'responds with only active state' do
         request.headers['Authorization'] = basic_auth_header_for_client(client)
@@ -191,7 +191,7 @@ describe Doorkeeper::TokensController do
 
     context 'when requested Access Token revoked' do
       let(:client) { FactoryBot.create(:application) }
-      let(:access_token) { FactoryBot.create(:access_token, application: client, revoked_at: 1.year.ago) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner, application: client, revoked_at: 1.year.ago) }
 
       it 'responds with only active state' do
         request.headers['Authorization'] = basic_auth_header_for_client(client)
@@ -204,7 +204,7 @@ describe Doorkeeper::TokensController do
     end
 
     context 'unauthorized (no bearer token or client credentials)' do
-      let(:access_token) { FactoryBot.create(:access_token) }
+      let(:access_token) { FactoryBot.create(:access_token, :with_resource_owner) }
 
       it 'responds with invalid_request error' do
         post :introspect, params: { token: access_token.token }

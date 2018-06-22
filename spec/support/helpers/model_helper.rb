@@ -8,7 +8,7 @@ module ModelHelper
   end
 
   def authorization_code_exists(options = {})
-    @authorization = FactoryBot.create(:access_grant, options)
+    @authorization = FactoryBot.create(:access_grant, :with_resource_owner, options)
   end
 
   def access_grant_should_exist_for(client, resource_owner)

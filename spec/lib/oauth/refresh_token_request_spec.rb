@@ -126,7 +126,7 @@ module Doorkeeper::OAuth
 
     context 'with scopes' do
       let(:refresh_token) do
-        FactoryBot.create :access_token,
+        FactoryBot.create :access_token, :with_resource_owner,
                            use_refresh_token: true,
                            scopes: 'public write'
       end

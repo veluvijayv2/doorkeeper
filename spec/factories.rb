@@ -6,10 +6,12 @@ FactoryBot.define do
     expires_in 100
     scopes 'public write'
 
-    before(:create) do |grant|
-      resource_owner = create(:doorkeeper_testing_user)
+    trait :with_resource_owner do
+      after(:build) do |grant|
+        resource_owner = create(:doorkeeper_testing_user)
 
-      grant.resource_owner = resource_owner
+        grant.resource_owner = resource_owner
+      end
     end
   end
 
@@ -22,10 +24,12 @@ FactoryBot.define do
       application nil
     end
 
-    before(:create) do |token|
-      resource_owner = create(:doorkeeper_testing_user)
+    trait :with_resource_owner do
+      after(:build)  do |token|
+        resource_owner = create(:doorkeeper_testing_user)
 
-      token.resource_owner = resource_owner
+        token.resource_owner = resource_owner
+      end
     end
   end
 

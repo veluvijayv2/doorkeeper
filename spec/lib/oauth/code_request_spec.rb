@@ -16,7 +16,7 @@ module Doorkeeper::OAuth
       )
     end
 
-    let(:owner) { double :owner, id: 8900 }
+    let(:owner) { FactoryBot.create(:doorkeeper_testing_user) }
 
     subject do
       CodeRequest.new(pre_auth, owner)

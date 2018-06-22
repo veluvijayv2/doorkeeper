@@ -128,7 +128,7 @@ module Doorkeeper
       end
 
       it 'should destroy its access grants' do
-        FactoryBot.create(:access_grant, application: new_application)
+        FactoryBot.create(:access_grant, :with_resource_owner, application: new_application)
         expect { new_application.destroy }.to change { Doorkeeper::AccessGrant.count }.by(-1)
       end
 

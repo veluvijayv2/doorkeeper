@@ -38,10 +38,12 @@ describe 'Revocable' do
       `previous_refresh_token` attribute" do
       previous_token = FactoryBot.create(
         :access_token,
+        :with_resource_owner,
         refresh_token: "refresh_token"
       )
       current_token = FactoryBot.create(
         :access_token,
+        :with_resource_owner,
         previous_refresh_token: previous_token.refresh_token
       )
 

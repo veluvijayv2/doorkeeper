@@ -16,7 +16,7 @@ module Doorkeeper
 
     belongs_to :application, belongs_to_options
 
-    belongs_to :resource_owner, polymorphic: true
+    belongs_to :resource_owner, polymorphic: true, optional: true
 
     validates :token, presence: true, uniqueness: true
     validates :refresh_token, uniqueness: true, if: :use_refresh_token?
