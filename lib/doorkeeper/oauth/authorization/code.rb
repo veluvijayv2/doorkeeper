@@ -30,6 +30,7 @@ module Doorkeeper
         def access_grant_attributes
           pkce_attributes.merge application_id: pre_auth.client.id,
                                 resource_owner_id: resource_owner.id,
+                                resource_owner_type: resource_owner.model_name.name,
                                 expires_in: authorization_code_expires_in,
                                 redirect_uri: pre_auth.redirect_uri,
                                 scopes: pre_auth.scopes.to_s

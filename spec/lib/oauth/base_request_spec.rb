@@ -15,6 +15,8 @@ module Doorkeeper::OAuth
 
     let(:client) { double :client, id: '1' }
 
+    let(:owner) { FactoryBot.create :doorkeeper_testing_user }
+
     let(:scopes_array) { %w[public write] }
 
     let(:server) do
@@ -98,7 +100,7 @@ module Doorkeeper::OAuth
       it "returns an instance of AccessToken" do
         result = subject.find_or_create_access_token(
           client,
-          "1",
+          owner,
           "public",
           server
         )
@@ -113,7 +115,7 @@ module Doorkeeper::OAuth
                         refresh_token_enabled?: false)
         result = subject.find_or_create_access_token(
           client,
-          "1",
+          owner,
           "public",
           server
         )
@@ -129,7 +131,7 @@ module Doorkeeper::OAuth
                         })
         result = subject.find_or_create_access_token(
           client,
-          "1",
+          owner,
           "public",
           server
         )
@@ -137,7 +139,7 @@ module Doorkeeper::OAuth
 
         result = subject.find_or_create_access_token(
           client,
-          "1",
+          owner,
           "private",
           server
         )

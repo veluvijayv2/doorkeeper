@@ -14,7 +14,7 @@ module Doorkeeper::OAuth
       )
     end
     let(:client) { FactoryBot.create(:application) }
-    let(:owner)  { double :owner, id: 99 }
+    let(:owner)  { FactoryBot.create :doorkeeper_testing_user }
 
     subject do
       PasswordAccessTokenRequest.new(server, client, owner)
@@ -57,6 +57,7 @@ module Doorkeeper::OAuth
 
     it 'creates token even when there is already one (default)' do
       FactoryBot.create(:access_token, application_id: client.id, resource_owner_id: owner.id)
+
       expect do
         subject.authorize
       end.to change { Doorkeeper::AccessToken.count }.by(1)
@@ -64,7 +65,9 @@ module Doorkeeper::OAuth
 
     it 'skips token creation if there is already one' do
       allow(Doorkeeper.configuration).to receive(:reuse_access_token).and_return(true)
-      FactoryBot.create(:access_token, application_id: client.id, resource_owner_id: owner.id)
+
+      FactoryBot.create(:access_token, application_id: client.id, resource_owner: owner)
+
       expect do
         subject.authorize
       end.to_not change { Doorkeeper::AccessToken.count }

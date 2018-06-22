@@ -16,6 +16,8 @@ module Doorkeeper
 
     belongs_to :application, belongs_to_options
 
+    belongs_to :resource_owner, polymorphic: true
+
     validates :resource_owner_id, :application_id, :token, :expires_in, :redirect_uri, presence: true
     validates :token, uniqueness: true
 

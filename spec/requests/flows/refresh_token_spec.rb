@@ -133,7 +133,7 @@ describe 'Refresh Token Flow' do
       @token = FactoryBot.create(
         :access_token,
         application: @client,
-        resource_owner_id: @resource_owner.id,
+        resource_owner: @resource_owner,
         use_refresh_token: true
       )
       @token.update_attribute :expires_in, -100

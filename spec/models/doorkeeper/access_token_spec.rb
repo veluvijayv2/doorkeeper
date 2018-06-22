@@ -222,7 +222,7 @@ module Doorkeeper
         let(:default_attributes) do
           { application: application, resource_owner_id: resource_owner_id }
         end
-        let(:access_token1) { FactoryBot.create :access_token, default_attributes }
+        let(:access_token1) { FactoryBot.create :access_token, application: application }
 
         context 'the second token has the same owner and same app' do
           let(:access_token2) { FactoryBot.create :access_token, default_attributes }
@@ -243,7 +243,7 @@ module Doorkeeper
         context 'the second token has different owner and different app' do
 
           let(:other_application) { FactoryBot.create :application }
-          let(:access_token2) { FactoryBot.create :access_token, application: other_application, resource_owner_id: 42 }
+          let(:access_token2) { FactoryBot.create :access_token, application: other_application }
 
           it 'fail' do
             expect(access_token1.same_credential?(access_token2)).to be_falsey
@@ -251,7 +251,7 @@ module Doorkeeper
         end
 
         context 'the second token has different owner and same app' do
-          let(:access_token2) { FactoryBot.create :access_token, application: application, resource_owner_id: 42 }
+          let(:access_token2) { FactoryBot.create :access_token, application: application }
 
           it 'fail' do
             expect(access_token1.same_credential?(access_token2)).to be_falsey
@@ -291,10 +291,10 @@ module Doorkeeper
     end
 
     describe '.revoke_all_for' do
-      let(:resource_owner) { double(id: 100) }
+      let(:resource_owner) { FactoryBot.create :doorkeeper_testing_user }
       let(:application)    { FactoryBot.create :application }
       let(:default_attributes) do
-        { application: application, resource_owner_id: resource_owner.id }
+        { application: application, resource_owner: resource_owner }
       end
 
       it 'revokes all tokens for given application and resource owner' do
@@ -319,13 +319,13 @@ module Doorkeeper
     end
 
     describe '.matching_token_for' do
-      let(:resource_owner_id) { 100 }
+      let(:resource_owner) { FactoryBot.create :doorkeeper_testing_user }
       let(:application)       { FactoryBot.create :application }
       let(:scopes) { Doorkeeper::OAuth::Scopes.from_string('public write') }
       let(:default_attributes) do
         {
           application: application,
-          resource_owner_id: resource_owner_id,
+          resource_owner: resource_owner,
           scopes: scopes.to_s
         }
       end
@@ -336,56 +336,55 @@ module Doorkeeper
 
       it 'returns only one token' do
         token = FactoryBot.create :access_token, default_attributes
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to eq(token)
       end
 
       it 'accepts resource owner as object' do
-        resource_owner = double(to_key: true, id: 100)
         token = FactoryBot.create :access_token, default_attributes
         last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to eq(token)
       end
 
       it 'accepts nil as resource owner' do
-        token = FactoryBot.create :access_token, default_attributes.merge(resource_owner_id: nil)
+        token = FactoryBot.create :access_token, default_attributes.merge(resource_owner: nil)
         last_token = AccessToken.matching_token_for(application, nil, scopes)
         expect(last_token).to eq(token)
       end
 
       it 'excludes revoked tokens' do
         FactoryBot.create :access_token, default_attributes.merge(revoked_at: 1.day.ago)
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
       it "excludes tokens with a different application" do
         FactoryBot.create :access_token, default_attributes.merge(application: FactoryBot.create(:application))
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
       it "excludes tokens with a different resource owner" do
-        FactoryBot.create :access_token, default_attributes.merge(resource_owner_id: 2)
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        FactoryBot.create :access_token, default_attributes.except(:resource_owner).merge(resource_owner_id: 2)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
       it "excludes tokens with fewer scopes" do
         FactoryBot.create :access_token, default_attributes.merge(scopes: 'public')
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
       it 'excludes tokens with different scopes' do
         FactoryBot.create :access_token, default_attributes.merge(scopes: 'public email')
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
       it 'excludes tokens with additional scopes' do
         FactoryBot.create :access_token, default_attributes.merge(scopes: 'public write email')
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
@@ -393,7 +392,7 @@ module Doorkeeper
         FactoryBot.create :access_token, default_attributes.merge(
           application: application, scopes: 'public read'
         )
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
@@ -402,7 +401,7 @@ module Doorkeeper
         FactoryBot.create :access_token, default_attributes.merge(
           application: application
         )
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to be_nil
       end
 
@@ -410,18 +409,18 @@ module Doorkeeper
         application = FactoryBot.create :application, scopes: "sample:scope"
         app_params = {
           application_id: application.id, scopes: "sample:scope",
-          resource_owner_id: 100
+          resource_owner_id: resource_owner.id
         }
         FactoryBot.create :access_token, app_params
         empty_scopes = Doorkeeper::OAuth::Scopes.from_string("")
-        last_token = AccessToken.matching_token_for(application, 100, empty_scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, empty_scopes)
         expect(last_token).to be_nil
       end
 
       it 'matches token if empty scope requested and no token scopes present' do
         empty_scopes = Doorkeeper::OAuth::Scopes.from_string("")
         token = FactoryBot.create :access_token, default_attributes.merge(scopes: empty_scopes)
-        last_token = AccessToken.matching_token_for(application, 100, empty_scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, empty_scopes)
         expect(last_token).to eq(token)
       end
 
@@ -430,7 +429,7 @@ module Doorkeeper
         matching_token = FactoryBot.create :access_token, default_attributes
         FactoryBot.create :access_token, default_attributes.merge(scopes: 'public')
 
-        last_token = AccessToken.matching_token_for(application, resource_owner_id, scopes)
+        last_token = AccessToken.matching_token_for(application, resource_owner, scopes)
         expect(last_token).to eq(matching_token)
       end
     end

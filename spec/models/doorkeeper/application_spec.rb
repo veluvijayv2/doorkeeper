@@ -175,7 +175,7 @@ module Doorkeeper
     end
 
     describe :authorized_for do
-      let(:resource_owner) { double(:resource_owner, id: 10) }
+      let(:resource_owner) { FactoryBot.create :doorkeeper_testing_user }
 
       it 'is empty if the application is not authorized for anyone' do
         expect(Application.authorized_for(resource_owner)).to be_empty
@@ -183,7 +183,7 @@ module Doorkeeper
 
       it 'returns only application for a specific resource owner' do
         FactoryBot.create(:access_token, resource_owner_id: resource_owner.id + 1)
-        token = FactoryBot.create(:access_token, resource_owner_id: resource_owner.id)
+        token = FactoryBot.create(:access_token, resource_owner: resource_owner)
         expect(Application.authorized_for(resource_owner)).to eq([token.application])
       end
 
@@ -193,15 +193,15 @@ module Doorkeeper
       end
 
       it 'returns all applications that have been authorized' do
-        token1 = FactoryBot.create(:access_token, resource_owner_id: resource_owner.id)
-        token2 = FactoryBot.create(:access_token, resource_owner_id: resource_owner.id)
+        token1 = FactoryBot.create(:access_token, resource_owner: resource_owner)
+        token2 = FactoryBot.create(:access_token, resource_owner: resource_owner)
         expect(Application.authorized_for(resource_owner)).to eq([token1.application, token2.application])
       end
 
       it 'returns only one application even if it has been authorized twice' do
         application = FactoryBot.create(:application)
-        FactoryBot.create(:access_token, resource_owner_id: resource_owner.id, application: application)
-        FactoryBot.create(:access_token, resource_owner_id: resource_owner.id, application: application)
+        FactoryBot.create(:access_token, resource_owner: resource_owner, application: application)
+        FactoryBot.create(:access_token, resource_owner: resource_owner, application: application)
         expect(Application.authorized_for(resource_owner)).to eq([application])
       end
     end

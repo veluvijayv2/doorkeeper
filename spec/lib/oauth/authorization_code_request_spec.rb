@@ -83,7 +83,7 @@ module Doorkeeper::OAuth
       end
 
       FactoryBot.create(:access_token, application_id: client.id,
-        resource_owner_id: grant.resource_owner_id, scopes: grant.scopes.to_s)
+        resource_owner: grant.resource_owner, scopes: grant.scopes.to_s)
 
       expect { subject.authorize }.to_not change { Doorkeeper::AccessToken.count }
     end

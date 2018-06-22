@@ -29,7 +29,7 @@ describe Doorkeeper::AuthorizationsController, 'implicit grant flow' do
 
   let(:client)        { FactoryBot.create :application }
   let(:user)          { User.create!(name: 'Joe', password: 'sekret') }
-  let(:access_token)  { FactoryBot.build :access_token, resource_owner_id: user.id, application_id: client.id }
+  let(:access_token)  { FactoryBot.build :access_token, resource_owner: user, application_id: client.id }
 
   before do
     allow(Doorkeeper.configuration).to receive(:grant_flows).and_return(["implicit"])

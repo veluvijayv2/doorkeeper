@@ -16,6 +16,8 @@ module Doorkeeper
 
     belongs_to :application, belongs_to_options
 
+    belongs_to :resource_owner, polymorphic: true
+
     validates :token, presence: true, uniqueness: true
     validates :refresh_token, uniqueness: true, if: :use_refresh_token?
 
@@ -37,7 +39,7 @@ module Doorkeeper
     #   active Access Tokens for Resource Owner
     #
     def self.active_for(resource_owner)
-      where(resource_owner_id: resource_owner.id, revoked_at: nil)
+      where(resource_owner: resource_owner, revoked_at: nil)
     end
 
     def self.refresh_token_revoked_on_use?

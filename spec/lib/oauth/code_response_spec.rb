@@ -16,7 +16,7 @@ module Doorkeeper
           end
 
           let :auth do
-            Authorization::Token.new(pre_auth, double(id: 1)).tap do |c|
+            Authorization::Token.new(pre_auth, FactoryBot.create(:doorkeeper_testing_user)).tap do |c|
               c.issue_token
               allow(c.token).to receive(:expires_in_seconds).and_return(3600)
             end

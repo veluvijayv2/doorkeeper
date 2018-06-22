@@ -43,7 +43,7 @@ module Doorkeeper
     def matching_token?
       token = AccessToken.matching_token_for(
         pre_auth.client,
-        current_resource_owner.id,
+        current_resource_owner,
         pre_auth.scopes
       )
 

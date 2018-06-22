@@ -1,19 +1,31 @@
 FactoryBot.define do
   factory :access_grant, class: Doorkeeper::AccessGrant do
-    sequence(:resource_owner_id) { |n| n }
     application
+
     redirect_uri 'https://app.com/callback'
     expires_in 100
     scopes 'public write'
+
+    before(:create) do |grant|
+      resource_owner = create(:doorkeeper_testing_user)
+
+      grant.resource_owner = resource_owner
+    end
   end
 
   factory :access_token, class: Doorkeeper::AccessToken do
-    sequence(:resource_owner_id) { |n| n }
     application
+
     expires_in 2.hours
 
     factory :clientless_access_token do
       application nil
+    end
+
+    before(:create) do |token|
+      resource_owner = create(:doorkeeper_testing_user)
+
+      token.resource_owner = resource_owner
     end
   end
 

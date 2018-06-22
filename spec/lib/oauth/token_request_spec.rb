@@ -6,6 +6,10 @@ module Doorkeeper::OAuth
       FactoryBot.create(:application, scopes: "public")
     end
 
+    let :owner do
+      FactoryBot.create(:doorkeeper_testing_user)
+    end
+
     let :pre_auth do
       double(
         :pre_auth,
@@ -16,10 +20,6 @@ module Doorkeeper::OAuth
         error: nil,
         authorizable?: true
       )
-    end
-
-    let :owner do
-      double :owner, id: 7866
     end
 
     subject do
@@ -73,8 +73,10 @@ module Doorkeeper::OAuth
 
       it 'creates a new token if scopes do not match' do
         allow(Doorkeeper.configuration).to receive(:reuse_access_token).and_return(true)
+
         FactoryBot.create(:access_token, application_id: pre_auth.client.id,
-                           resource_owner_id: owner.id, scopes: '')
+                           resource_owner: owner, scopes: '')
+
         expect do
           subject.authorize
         end.to change { Doorkeeper::AccessToken.count }.by(1)
@@ -86,7 +88,7 @@ module Doorkeeper::OAuth
         allow(application.scopes).to receive(:all?).and_return(true)
 
         FactoryBot.create(:access_token, application_id: pre_auth.client.id,
-                           resource_owner_id: owner.id, scopes: 'public')
+                           resource_owner: owner, scopes: 'public')
 
         expect { subject.authorize }.not_to change { Doorkeeper::AccessToken.count }
       end

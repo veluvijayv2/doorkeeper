@@ -17,7 +17,7 @@ module ModelHelper
     expect(grant.application).to have_attributes(id: client.id).
       and(be_instance_of(Doorkeeper::Application))
 
-    expect(grant.resource_owner_id).to eq(resource_owner.id)
+    expect(grant.resource_owner).to eq(resource_owner)
   end
 
   def access_token_should_exist_for(client, resource_owner)
@@ -26,7 +26,7 @@ module ModelHelper
     expect(token.application).to have_attributes(id: client.id).
       and(be_instance_of(Doorkeeper::Application))
 
-    expect(token.resource_owner_id).to eq(resource_owner.id)
+    expect(token.resource_owner).to eq(resource_owner)
   end
 
   def access_grant_should_not_exist
