@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Doorkeeper
-  class Application < ActiveRecord::Base
+
+  class Doorkeeper::Application < ActiveRecord::Base
     self.table_name = "#{table_name_prefix}oauth_applications#{table_name_suffix}"
 
     include ApplicationMixin
@@ -91,4 +91,4 @@ module Doorkeeper
       Doorkeeper.configuration.enforce_configured_scopes?
     end
   end
-end
+
