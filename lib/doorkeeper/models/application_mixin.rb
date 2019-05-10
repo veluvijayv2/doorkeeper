@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-module Doorkeeper
-  module ApplicationMixin
+  module Doorkeeper::ApplicationMixin
     extend ActiveSupport::Concern
 
     include OAuth::Helpers
@@ -92,4 +91,4 @@ module Doorkeeper
       end
     end
   end
-end
+
